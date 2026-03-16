@@ -60,17 +60,16 @@ export function emptyForm(): void {
 
 
 /**
- * Fetches a specific game's data from the backend.
+ * Loads the saved game's data from the backend.
  * 
  * @async
- * @param id - The id of the game.
  * @returns {Promise<Game>} - A Game object if the request is successful.
  * @throws Will rethrow any other errors.
  */
-export const getGame = async (id: string): Promise<GameRead> => {
+export const loadsGame = async (): Promise<GameRead | null> => {
     handleCheckTokenValidity();
 
-    return await axios.get<{ game: GameRead, message: string }>(`http://127.0.0.1:5000/api/game/${id}`, {
+    return await axios.get<{ game: GameRead, message: string }>(`http://127.0.0.1:5000/api/game/last-game`, {
         headers: {
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
             }
@@ -87,14 +86,20 @@ export const getGame = async (id: string): Promise<GameRead> => {
 
 
 /**
- * Handler to wrap the getGame function.
+ * Handler to wrap the loadsGame function.
  * 
  * @async
  * @handler
  */
-export const handleGetGame = async (id: string): Promise<void> => {
-    await getGame(id)
-        .then((data) => { game.value = data })
+export const handleLoadsGame = async (): Promise<void> => {
+    await loadsGame()
+        .then((data) => {
+            if (data !== null) game.value = data
+            else {
+                emptyForm();
+                game.value = formGame.value;
+            }
+        })
         .catch((err) => {
             message.value = err;
             console.error('Error:', err)

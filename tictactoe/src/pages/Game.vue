@@ -27,19 +27,21 @@ This module displays the game board and alows the user to play.
 </template>
 
 <script setup lang="ts">
-    import { onMounted, ref, watch } from 'vue';
+    import { onMounted, ref } from 'vue';
     import { handleGetUser } from '../api/users';
     import { getToken, idUser } from '../api/token';
     import { playAiTurn } from '@/api/ai';
+    import { formGame } from '@/api/games';
  
 
-    const board = ref(Array(9).fill(""));
+    const board = ref<Array<string> | undefined>(Array(9).fill(""));
     const disableCells = ref(false);
     const gameMessage = ref("Game Start");
     
     onMounted(async () => {
         getToken();
         await handleGetUser(idUser.value);
+        if (formGame.value.gameDate && formGame.value.moves) board.value = formGame.value.moves['game'];
     });
 
 
@@ -51,17 +53,20 @@ This module displays the game board and alows the user to play.
      * @param i - The played cell's index.
      */
     async function playHumanTurn(i: number): Promise<void> {
-        if (!board.value[i]) board.value[i] = "X";
-        disableCells.value = true;  // Disabling all cells during AI turn
-        if (checkWinner()) return;
+        if (board.value) {
+            if (!board.value[i]) board.value[i] = "X";
+            disableCells.value = true;  // Disabling all cells during AI turn
+            if (checkWinner()) return;
 
-        await playAiTurn(board.value)
-                .then((data) => {
-                    console.warn(data);
-                    board.value = data;
-                    disableCells.value = false;
-                })
-                .catch((err) => { console.error(err) });
+            await playAiTurn(board.value)
+                    .then((data) => {
+                        console.warn(data);
+                        board.value = data;
+                        disableCells.value = false;
+                    })
+                    .catch((err) => { console.error(err) });
+        }
+
         if (checkWinner()) return;
     };
 
@@ -88,19 +93,19 @@ This module displays the game board and alows the user to play.
     function checkWinner(): boolean {
         let zerosCount = 0;
         for (const line of lines) {
-            if (line.every(i => board.value[i] === "X")) {
+            if (line.every(i => { if (board.value) board.value[i] === "X"} )) {
                 disableCells.value = true;
                 gameMessage.value = "X wins";
                 return true;
             }
             
-            if (line.every(i => board.value[i] === "O")) {
+            if (line.every(i => { if (board.value) board.value[i] === "O"})) {
                 disableCells.value = true;
                 gameMessage.value = "O wins";
                 return true;
             }
             
-            if (board.value.includes("")) {
+            if (board.value && board.value.includes("")) {
                 zerosCount++;
             }
         }

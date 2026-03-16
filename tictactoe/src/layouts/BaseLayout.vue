@@ -42,25 +42,6 @@ pages content.
       </v-row>
     </v-app-bar>
 
-    <!-- Displays the navigation drawer that can be opened by clicking the leftmost icon in the nav bar -->
-    <v-navigation-drawer
-      color="grey-darken-4"
-      expand-on-hover
-      rail
-    >
-      <v-list density="compact" nav>
-        <template v-for="item in sideItems" :key="item.value">
-          <v-list-item
-            v-if="!item.roles || item.roles.includes(role)"
-            @click="redirection(item.value)"
-            :prepend-icon="item.icon"
-          >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </template>
-      </v-list>
-    </v-navigation-drawer>
-
     <!-- The main part, where the pages' content is displayed -->
     <v-main>
       <router-view />
@@ -97,26 +78,6 @@ pages content.
       title: 'Logout',
       value: '/logout',
       icon: 'mdi-logout'
-    }
-  ];
-
-  // The page names and URLs to display in the navigation drawer
-  const sideItems = [
-    {
-      title: 'Home page',
-      value: '/home-page',
-      icon: 'mdi-home'
-    },
-    {
-      title: 'Admin dashboard',
-      value: '/admin-dashboard',
-      roles: ['Admin', 'Labo Manager'],
-      icon: 'mdi-shield-crown'
-    },
-    {
-      title: 'Game',
-      value: '/game',
-      icon: 'mdi-controller'
     }
   ];
 

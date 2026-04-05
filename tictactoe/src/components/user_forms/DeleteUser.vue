@@ -10,12 +10,13 @@ up when clicking on the delete button.
     <div class="px-0 py-4 text-center">
         <v-dialog
             v-model="deleteUserDialog"
+            width="50%"
         >
             <template v-slot:activator="{ props: activatorProps }">
                 <!-- The button that opens the pop-up confirmation window -->
                 <v-btn
                     icon
-                    color="error"
+                    style="background-color: red;"
                     v-bind="activatorProps"
                     class="tiny-btn"
                 >
@@ -30,6 +31,7 @@ up when clicking on the delete button.
                     <v-card
                         prepend-icon="mdi-lock"
                         title="Confirm Deletion"
+                        color="white"
                     >
                     <v-card-text class="text-center">
                         <h3>Are you sure you want to delete this user?</h3>
@@ -45,6 +47,7 @@ up when clicking on the delete button.
                                 text="No"
                                 variant="plain"
                                 @click="deleteUserDialog = false"
+                                color="white"
                             />
                 
                             <!-- Submits deletion request and closes the pop-up window -->
@@ -52,6 +55,7 @@ up when clicking on the delete button.
                                 text="Yes"
                                 type="submit"
                                 v-model:loading="loading"
+                                color="white"
                             />
                         </v-card-actions>
                     </v-card>

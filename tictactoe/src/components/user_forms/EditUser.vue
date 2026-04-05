@@ -10,6 +10,7 @@ AdminDashboard module.
     <div class="px-0 py-4 text-center">
         <v-dialog
             v-model="editUserDialog"
+            width="50%"
         >
             <template v-slot:activator="{ props: activatorProps }">
                 <!-- The button that opens the pop-up form -->
@@ -30,6 +31,7 @@ AdminDashboard module.
                     <v-card
                         prepend-icon="mdi-account-edit"
                         title="Edit User"
+                        color="white"
                     >
                     <v-card-text>
                         <v-row dense class="justify-center">
@@ -78,6 +80,7 @@ AdminDashboard module.
                                 text="Close"
                                 variant="plain"
                                 @click="() => { editUserDialog = false; message = '' }"
+                                color="white"
                             />
                 
                             <!-- Submits form and closes the pop-up window -->
@@ -85,6 +88,7 @@ AdminDashboard module.
                                 text="Save"
                                 type="submit"
                                 v-model:loading="loading"
+                                color="white"
                             />
                         </v-card-actions>
                     </v-card>

@@ -8,6 +8,7 @@ This module provides a pop-up form to edit an existing user's password.
     <div class="px-0 py-4 text-center">
         <v-dialog
             v-model="editPasswordDialog"
+            width="50%"
         >
             <template v-slot:activator="{ props: activatorProps }">
                 <!-- The button that opens the pop-up form -->
@@ -28,6 +29,7 @@ This module provides a pop-up form to edit an existing user's password.
                     <v-card
                         prepend-icon="mdi-lock"
                         title="Edit Password"
+                        color="white"
                     >
                     <v-card-text>
                         <v-row dense class="justify-center">
@@ -94,6 +96,7 @@ This module provides a pop-up form to edit an existing user's password.
                                 text="Close"
                                 variant="plain"
                                 @click="() => { editPasswordDialog = false; message = '' }"
+                                color="white"
                             />
                 
                             <!-- Submits form and closes the pop-up window -->
@@ -101,6 +104,7 @@ This module provides a pop-up form to edit an existing user's password.
                                 text="Save"
                                 type="submit"
                                 v-model:loading="loading"
+                                color="white"
                             />
                         </v-card-actions>
                     </v-card>

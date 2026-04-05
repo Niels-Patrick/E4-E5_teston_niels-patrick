@@ -10,114 +10,228 @@ This module is only accessible to users with the "Admin" role. It allows them to
 
 <template>
     <v-row class="py-1">
-        <v-card-title>Administration Dashboard</v-card-title>
+        <v-card-title style="color: black; font-size: 40px;">Administration Dashboard</v-card-title>
     </v-row>
 
     <v-row justify="center">
-        <!-- Displays a list of all users -->
-        <v-card
-            title="Users List"
-            prepend-icon="mdi-account-multiple"
-            width="80%"
-        >
-            <template v-slot:text>
-                <v-row>
-                    <v-col cols="9">
-                        <v-text-field
-                            v-model="search"
-                            label="Search"
-                            prepend-inner-icon="mdi-magnify"
-                            variant="filled"
-                            bg-color="white"
-                            hide-details
-                            single-line
-                            color="orange-lighten-1"
-                            width="500"
-                            density="compact"
-                        />
-                    </v-col>
-                    <v-col>
-                        <div>
-                            <v-select
-                                label="Role"
-                                v-model="selectedRoles"
-                                :items="availableRoles"
+        <v-col>
+            <!-- Displays a list of all users -->
+            <v-card
+                title="Users List"
+                prepend-icon="mdi-account-multiple"
+                width="100%"
+            >
+                <template v-slot:text>
+                    <v-row>
+                        <v-col cols="8">
+                            <v-text-field
+                                v-model="search"
+                                label="Search"
+                                prepend-inner-icon="mdi-magnify"
                                 variant="filled"
                                 bg-color="white"
-                                multiple
-                                chips
-                                density="compact"
+                                hide-details
+                                single-line
+                                color="orange-lighten-1"
                                 width="250"
-                                prepend-inner-icon="mdi-filter"
-                            >
-                                <!-- Custom dropdown display -->
-                                <template #item="{ item, props }">
-                                    <v-list-item v-bind="props">
-                                        <template #prepend>
-                                            <v-checkbox-btn
-                                                :model-value="selectedRoles.includes(item.value)"
-                                                readonly
-                                            />
-                                        </template>
-                                        <v-list-item-title class="d-flex justify-space-between">
-                                            <span class="text-grey">
-                                                {{ item.count }}
-                                            </span>
-                                        </v-list-item-title>
-                                    </v-list-item>
-                                </template>
-                            </v-select>
-                        </div>
-                    </v-col>
-                </v-row>
-            </template>
-
-            <v-data-table
-                :headers="userHeaders"
-                :items="filteredUsers"
-            >
-                <template  #item.edit="{ item }">
-                    <v-row>
-                        <v-col class="px-0">
-                            <EditUser :user="item" parentType="AdminDashboard" />
+                                density="compact"
+                            />
                         </v-col>
-                        <v-col class="px-0">
-                            <EditPassword :user="item" />
-                        </v-col>
-                        <v-col class="px-0">
-                            <DeleteUser :user="item" />
+                        <v-col>
+                            <div>
+                                <v-select
+                                    label="Role"
+                                    v-model="selectedRoles"
+                                    :items="availableRoles"
+                                    variant="filled"
+                                    bg-color="white"
+                                    multiple
+                                    chips
+                                    density="compact"
+                                    width="250"
+                                    prepend-inner-icon="mdi-filter"
+                                >
+                                    <!-- Custom dropdown display -->
+                                    <template #item="{ item, props }">
+                                        <v-list-item v-bind="props">
+                                            <template #prepend>
+                                                <v-checkbox-btn
+                                                    :model-value="selectedRoles.includes(item.value)"
+                                                    readonly
+                                                />
+                                            </template>
+                                            <v-list-item-title class="d-flex justify-space-between">
+                                                <span class="text-grey">
+                                                    {{ item.count }}
+                                                </span>
+                                            </v-list-item-title>
+                                        </v-list-item>
+                                    </template>
+                                </v-select>
+                            </div>
                         </v-col>
                     </v-row>
                 </template>
-            </v-data-table>
 
-            <v-row>
-                <v-col class="py-2">
-                    <AddUser parentType="AdminDashboard" />
-                </v-col>
-            </v-row>
-        </v-card>
+                <v-data-table
+                    :headers="userHeaders"
+                    :items="filteredUsers"
+                    style="background-color: whitesmoke; color: black;"
+                    height="300"
+                >
+                    <template  #item.edit="{ item }">
+                        <v-row>
+                            <v-col class="px-0">
+                                <EditUser :user="item" parentType="AdminDashboard" />
+                            </v-col>
+                            <v-col class="px-0">
+                                <EditPassword :user="item" />
+                            </v-col>
+                            <v-col class="px-0">
+                                <DeleteUser :user="item" />
+                            </v-col>
+                        </v-row>
+                    </template>
+                </v-data-table>
+
+                <v-row>
+                    <v-col class="py-2">
+                        <AddUser parentType="AdminDashboard" />
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-col>
+
+        <v-col>
+            <v-card
+                title="Retrain Model"
+                width="100%"
+                style="background-color: whitesmoke; color: black;"
+                height="572"
+            >
+                <v-card-subtitle class="py-4">Please select the genetic algorithm parameters</v-card-subtitle>
+                <v-form @submit.prevent="handleFormRetrainModel" ref="formRef">
+                    <!-- Population size field -->
+                    <v-col
+                        sm="6"
+                        class="px-10"
+                    >
+                        <v-text-field
+                                label="Population size"
+                                v-model="formRetrain.populationSize"
+                                :rules="numbersRules"
+                                numbers
+                                prepend-icon="mdi-account-group"
+                                required
+                        />
+                    </v-col>
+
+                    <!-- Games per eval field -->
+                    <v-col
+                        md="6"
+                        sm="6"
+                        class="px-10"
+                    >
+                        <v-text-field
+                            label="Games per eval"
+                            v-model="formRetrain.gamesPerEval"
+                            :rules="numbersRules"
+                            number
+                            prepend-icon="mdi-controller"
+                            required
+                        />
+                    </v-col>
+
+                    <!-- Mutation rate field -->
+                    <v-col
+                        md="6"
+                        sm="6"
+                        class="px-10"
+                    >
+                        <v-text-field
+                            label="Mutation rate"
+                            v-model="formRetrain.mutationRate"
+                            :rules="numbersRules"
+                            number
+                            prepend-icon="mdi-dna"
+                            required
+                        />
+                    </v-col>
+
+                    <!-- Mutation standard deviation field -->
+                    <v-col
+                        md="6"
+                        sm="6"
+                        class="px-10"
+                    >
+                        <v-text-field
+                            label="Mutation standard deviation"
+                            v-model="formRetrain.mutationStd"
+                            :rules="numbersRules"
+                            number
+                            prepend-icon="mdi-chart-bell-curve"
+                            required
+                        />
+                    </v-col>
+
+                    <!-- Generations field -->
+                    <v-col
+                        md="6"
+                        sm="6"
+                        class="px-10"
+                    >
+                        <v-text-field
+                            label="Generations"
+                            v-model="formRetrain.generations"
+                            :rules="numbersRules"
+                            number
+                            prepend-icon="mdi-human-male-female-child"
+                            required
+                        />
+                    </v-col>
+
+                    <v-btn
+                        text="Start Retraining"
+                        type="submit"
+                        v-model:loading="loading"
+                        class="my-4"
+                    />
+                </v-form>
+
+                <v-alert
+                    v-if="message"
+                    :color="message.includes('Error') ? 'error' : 'success'"
+                    class="mt-5"
+                    variant="elevated"
+                >
+                    {{ message }}
+                </v-alert>
+            </v-card>
+        </v-col>
     </v-row>
 </template>
 
 <script setup lang="ts">
     import { computed, onMounted, ref } from 'vue';
-    import { message, users, handleGetUsers } from '../api/users';
+    import { users, handleGetUsers } from '../api/users';
     import { userHeaders } from '../headers/user_headers';
     import EditUser from '../components/user_forms/EditUser.vue';
     import EditPassword from '../components/user_forms/EditPassword.vue';
     import AddUser from '../components/user_forms/AddUser.vue';
     import DeleteUser from '../components/user_forms/DeleteUser.vue';
     import type { UserRead } from '../types/users';
+    import { formRetrain, loading, retrainModel, setFormToDefault } from '@/api/monitoring';
+    import { numbersRules } from '@/rules/rules';
+
 
     const search = ref('');
     const selectedRoles = ref<string[]>([]);
-
-    message.value = '';
+    const message = ref<string>("");
 
     // Get all users at start
     onMounted(async () => {
             await handleGetUsers();
+            setFormToDefault();
     });
 
     const availableRoles = computed(() => {
@@ -153,4 +267,29 @@ This module is only accessible to users with the "Admin" role. It allows them to
             return matchesRole;
         });
     });
+
+
+    /**
+     * Handles the form submit process by calling the Retrain Model Form Submit function.
+     * Finally, it closes the pop-up window.
+     * 
+     * @async
+     * @handler
+     */
+    async function handleFormRetrainModel(): Promise<void> {
+        loading.value = true;
+
+        try {
+            await retrainModel()
+                    .then((data) => { message.value = data })
+                    .catch((err) => { message.value = err });
+            console.warn(message.value);
+        }
+        catch (error) {
+            console.error('Error submitting retrain model form:', error);
+        }
+        finally {
+            loading.value = false;
+        }
+    };
 </script>

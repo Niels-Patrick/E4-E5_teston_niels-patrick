@@ -15,11 +15,11 @@ update a user's role, as in the case of a user updating their own information fr
     >
         <v-select
             label="Role"
-            v-model="formUser.roleId"
+            v-model="formUser.idRole"
             :rules="selectRules"
             :items="roles"
             item-title="name"
-            item-value="id"
+            item-value="idRole"
             required
         />
     </v-col>

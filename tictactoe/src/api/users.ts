@@ -343,11 +343,11 @@ export const handleAddUserSubmitForm = async (dialog: Ref<boolean>): Promise<voi
                 });
         }
         else {
-            console.log("Error: Passwords don't match");
+            console.error("Error: Passwords don't match");
         }
     }
     else {
-        console.log("Error: Invalid form");
+        console.error("Error: Invalid form");
     }
 };
 

@@ -7,7 +7,7 @@ import { ref } from "vue";
 import type { Router } from "vue-router";
 import { handleCheckTokenValidity } from "./token";
 
-export const formRef = ref();  // Used to check if a form is valid or not
+export const formRefLogin = ref();  // Used to check if a form is valid or not
 export const username = ref('');
 export const password = ref('');
 export const message = ref('');  // Message to display when submitting form
@@ -62,7 +62,7 @@ export const handleSubmitLoginForm = async (router: Router): Promise<void> => {
     loading.value = true;
 
     // Checks if the submitted form respects the defined rules
-    const isValid = await formRef.value?.validate();
+    const isValid = await formRefLogin.value?.validate();
     if (isValid?.valid) {
         await submitLoginForm(router)
             .then()

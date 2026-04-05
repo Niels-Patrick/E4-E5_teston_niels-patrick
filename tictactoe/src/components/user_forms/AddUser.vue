@@ -8,6 +8,7 @@ This module provides a pop-up form to add a new user in the database.
     <div class="pa-4 text-center">
         <v-dialog
             v-model="addUserDialog"
+            width="50%"
         >
             <template v-slot:activator="{ props: activatorProps }">
                 <!-- The button that opens the pop-up form -->
@@ -25,6 +26,7 @@ This module provides a pop-up form to add a new user in the database.
                     <v-card
                         prepend-icon="mdi-account-plus"
                         title="Add User"
+                        color="white"
                     >
                     <v-card-text>
                         <v-row dense class="justify-center">
@@ -103,6 +105,7 @@ This module provides a pop-up form to add a new user in the database.
                             <v-btn
                                 text="Close"
                                 variant="plain"
+                                color="white"
                                 @click="() => { addUserDialog = false; message = '' }"
                             />
                 
@@ -111,6 +114,7 @@ This module provides a pop-up form to add a new user in the database.
                                 text="Save"
                                 type="submit"
                                 v-model:loading="loading"
+                                color="white"
                             />
                         </v-card-actions>
                     </v-card>

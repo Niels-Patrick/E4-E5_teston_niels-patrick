@@ -22,6 +22,16 @@ pages content.
             Home Page
           </v-btn>
         </v-col>
+        <v-col
+          class="d-flex align-center"
+          cols="auto"
+        >
+          <v-btn
+            @click="redirection('/admin-dashboard')"
+          >
+            Admin Dashboard
+          </v-btn>
+        </v-col>
 
         <v-col class="d-flex justify-end ma-5">
           <v-menu>

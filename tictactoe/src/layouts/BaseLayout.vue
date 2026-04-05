@@ -9,36 +9,43 @@ pages content.
   <v-app>
     <!-- Displays the nav bar (the upper blue bar) -->
     <v-app-bar color="grey-darken-4">
-      <v-row>
-        <v-col>
+      <v-row align-content="center">
+        <v-col
+          class="d-flex align-center"
+          cols="auto"
+        >
           <v-img :width="65" src="/src/assets/game.png" class="ml-5" />
+          <v-btn
+            class="mx-5"
+            @click="redirection('/home-page')"
+          >
+            Home Page
+          </v-btn>
         </v-col>
 
-        <div class="d-flex align-center mx-5">
-          <v-col>
-            <v-menu>
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  class="tiny-btn"
-                >
-                  <v-icon>mdi-menu</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="(item, index) in topItems"
-                  :key="index"
-                  :value="index"
-                  :prepend-icon="item.icon"
-                  @click="handleChoice(item.value)"
-                >
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </v-col>
-        </div>
+        <v-col class="d-flex justify-end ma-5">
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                class="tiny-btn"
+              >
+                <v-icon>mdi-menu</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in topItems"
+                :key="index"
+                :value="index"
+                :prepend-icon="item.icon"
+                @click="handleChoice(item.value)"
+              >
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
       </v-row>
     </v-app-bar>
 

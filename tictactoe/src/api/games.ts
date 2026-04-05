@@ -157,10 +157,12 @@ export const handleGetGames = async (): Promise<void> => {
  *                          - An error message in case of failure.
  * @throws Will rethrow any other errors.
  */
-export const submitEditGameForm = async (dialog: Ref<boolean>): Promise<Game> => {
+export const submitEditGameForm = async (): Promise<Game> => {
     handleCheckTokenValidity();
 
-    const payload = cloneDeep(formGame.value);
+    let payload = cloneDeep(formGame.value);
+    console.warn(game.value.idGame);
+    payload["idGame"] = game.value.idGame;
 
     return await axios.put(`http://127.0.0.1:5000/api/game/`, payload,
     {
@@ -169,7 +171,6 @@ export const submitEditGameForm = async (dialog: Ref<boolean>): Promise<Game> =>
         }
     })
         .then((response) => {
-            dialog.value = false;  // Closes the pop-up window
             console.log(response.data.message);
 
             // Fetches the list of games to update displayed games' data
@@ -192,23 +193,14 @@ export const submitEditGameForm = async (dialog: Ref<boolean>): Promise<Game> =>
  * 
  * @async
  * @handler
- * @param dialog - A boolean variable containing the state of the dialog window containing the form (true = open,
- *                 false = close).
  */
-export const handleEditGameSubmitForm = async (dialog: Ref<boolean>): Promise<void> => {
-    const isValid = await formRef.value?.validate();
-    // Checks if the form is valid (all fields are filled correctly)
-    if (isValid?.valid) {
-        await submitEditGameForm(dialog)
-            .then()
-            .catch((err) => {
-                message.value = err;
-                console.error('Error:', err)
-            });
-    }
-    else {
-        console.log("Error: Invalid form");
-    }
+export const handleEditGameSubmitForm = async (): Promise<void> => {
+    await submitEditGameForm()
+        .then()
+        .catch((err) => {
+            message.value = err;
+            console.error('Error:', err)
+        });
 };
 
 
@@ -216,12 +208,11 @@ export const handleEditGameSubmitForm = async (dialog: Ref<boolean>): Promise<vo
  * Submits an add game pop-up form.
  * 
  * @async
- * @param dialog - The current state of the dialog window.
  * @returns {Promise<Game>} - A Game object in case of success.
  *                          - An error message in case of failure.
  * @throws Will rethrow any other errors.
  */
-export const submitAddGameForm = async (dialog: Ref<boolean>): Promise<Game> => {
+export const submitAddGameForm = async (): Promise<Game> => {
     handleCheckTokenValidity();
 
     const payload = cloneDeep(formGame.value);
@@ -233,7 +224,6 @@ export const submitAddGameForm = async (dialog: Ref<boolean>): Promise<Game> => 
         }
     })
         .then((response) => {
-            dialog.value = false;  // Closes the pop-up window
             console.log(response.data.message);
             
             // Fetches the list of games to update displayed games' data
@@ -259,24 +249,14 @@ export const submitAddGameForm = async (dialog: Ref<boolean>): Promise<Game> => 
  * 
  * @async
  * @handler
- * @param dialog - A boolean variable containing the state of the dialog window containing the form (true = open,
- *                 false = close).
  */
-export const handleAddGameSubmitForm = async (dialog: Ref<boolean>): Promise<void> => {
-    const isValid = await formRef.value?.validate();
-
-    // Checks if the form is valid (all fields are filled correctly)
-    if (isValid?.valid) {
-        await submitAddGameForm(dialog)
-            .then()
-            .catch((err) => {
-                message.value = err;
-                console.error('Error:', err)
-            });
-    }
-    else {
-        console.log("Error: Invalid form");
-    }
+export const handleAddGameSubmitForm = async (): Promise<void> => {
+    await submitAddGameForm()
+        .then()
+        .catch((err) => {
+            message.value = err;
+            console.error('Error:', err)
+        });
 };
 
 

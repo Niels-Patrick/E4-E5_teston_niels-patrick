@@ -19,9 +19,9 @@ This module is a temporary dummy home page.
             </v-row>
             <v-row
                 class="justify-center"
-                v-if="game.idGame === '0'"
+                v-if="game.idGame"
             >
-                <v-btn @click="redirection('/game', true)">Load Game</v-btn>
+                <v-btn @click="redirection('/game', true)">Load Last Game [{{ game.gameDate }}]</v-btn>
             </v-row>
         </e-card>
     </v-row>
@@ -32,7 +32,8 @@ This module is a temporary dummy home page.
     import { handleGetUser, user } from '../api/users';
     import { getToken, idUser } from '../api/token';
     import { useRouter } from 'vue-router';
-    import { emptyForm, game, handleLoadsGame, preFillForm } from '../api/games';
+    import { emptyForm, formGame, game, handleEditGameSubmitForm, handleLoadsGame, preFillForm } from '../api/games';
+    import { format } from 'date-fns';
  
 
     // Used for redirections when clicking on a page name in the navigation drawer
@@ -52,15 +53,36 @@ This module is a temporary dummy home page.
      * @param route - The URL route to redirect to.
      */
     function redirection(route: string, load: boolean): void {
+        if (load) {
+            handleSave();
+            preFillForm(game.value);
+            router.push(route);
+        }
+
         if (!load) {
             emptyForm();
             router.push(route);
         }
+    };
 
-        if (load) {
-            preFillForm(game.value);
-            router.push(route);
-        }
+
+    /**
+     * Handles the game saving process.
+     * 
+     * @function
+     * @async
+     */
+    async function handleSave(): Promise<void> {
+        formGame.value.gameDate = format(new Date(), 'yyyy-MM-dd');
+        formGame.value.gameResult = "0-1";
+        formGame.value.idUserX = idUser.value;
+        formGame.value.idUserO = undefined;
+        formGame.value.moves = {
+            "moves": game.value.moves!["moves"],
+            "result": "0-1"
+        };
+
+        handleEditGameSubmitForm();
     };
 </script>
 

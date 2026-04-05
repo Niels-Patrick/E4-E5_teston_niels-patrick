@@ -8,7 +8,7 @@ import type { User } from "./users";
 export type Game = {
     gameDate?: string
     gameResult?: string
-    moves?: Record<string, Array<string>>
+    moves?: Record<string, any>
     idUserX?: string
     idUserO?: string
 };

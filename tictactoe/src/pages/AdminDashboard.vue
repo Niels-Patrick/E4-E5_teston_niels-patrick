@@ -100,6 +100,15 @@ This module is only accessible to users with the "Admin" role. It allows them to
                     </v-col>
                 </v-row>
             </v-card>
+
+            <v-alert
+                v-if="message"
+                :color="message.includes('Error') ? 'error' : 'success'"
+                class="mt-5"
+                variant="elevated"
+            >
+                {{ message }}
+            </v-alert>
         </v-col>
 
         <v-col>
@@ -110,7 +119,7 @@ This module is only accessible to users with the "Admin" role. It allows them to
                 height="572"
             >
                 <v-card-subtitle class="py-4">Please select the genetic algorithm parameters</v-card-subtitle>
-                <v-form @submit.prevent="handleFormRetrainModel" ref="formRef">
+                <v-form @submit.prevent="">
                     <!-- Population size field -->
                     <v-col
                         sm="6"
@@ -190,48 +199,134 @@ This module is only accessible to users with the "Admin" role. It allows them to
                         />
                     </v-col>
 
-                    <v-btn
-                        text="Start Retraining"
-                        type="submit"
-                        v-model:loading="loading"
-                        class="my-4"
-                    />
-                </v-form>
+                    <v-row justify="center">
+                        <v-col class="px-0">
+                            <ConfirmRetrain :formRetrain="formRetrain" />
+                        </v-col>
 
-                <v-alert
-                    v-if="message"
-                    :color="message.includes('Error') ? 'error' : 'success'"
-                    class="mt-5"
-                    variant="elevated"
-                >
-                    {{ message }}
-                </v-alert>
+                        <v-col class="px-0 py-4">
+                            <v-btn
+                                prepend-icon="mdi-list-status"
+                                text="Check Status"
+                                @click="handleGetTrainingStatus"
+                            />
+                        </v-col>
+
+                        <v-col>
+                            <v-alert
+                                v-if="messageStatus !== ''"
+                                :color="messageStatus.includes('error') ? 'error' : ''"
+                                class="mx-5"
+                                variant="elevated"
+                            >
+                                {{ messageStatus }}
+                            </v-alert>
+                        </v-col>
+                    </v-row>
+                </v-form>
             </v-card>
+
+            <v-alert
+                v-if="messageRetrain !== ''"
+                :color="messageRetrain.includes('decay') ? 'error' : 'success'"
+                class="mt-5"
+                variant="elevated"
+            >
+                {{ messageRetrain }}
+            </v-alert>
         </v-col>
+    </v-row>
+
+    <v-row justify="center">
+        <v-card
+            title="Training Results"
+            prepend-icon="mdi-chart-line"
+            width="100%"
+        >
+            <v-row justify="center">
+                <v-col class="ma-5">
+                    <v-btn
+                        prepend-icon="mdi-chart-line"
+                        text="Get Last Training Results"
+                        @click="handleGetLastTrainingResults"
+                    />
+                </v-col>
+            </v-row>
+
+            <v-row v-if="plots.length" justify="center">
+                <v-col class="px-16 my-3">
+                    <h4>Win / Draw / Loss rates during evaluation</h4>
+                    <div v-for="plot in plots" :key="plot">
+                        <img
+                            v-if="plot.includes('gauge')"
+                            :src="apiBaseUrl + plot"
+                            alt="Training Plot"
+                        />
+                    </div>
+                </v-col>
+                <v-col>
+                    <h4>Fitness + Draw / Loss rates evolution of the best genome during training</h4>
+                    <div v-for="plot in plots" :key="plot">
+                        <img
+                            v-if="plot.includes('evolution')"
+                            :src="apiBaseUrl + plot"
+                            alt="Training Plot"
+                        />
+                    </div>
+                </v-col>
+            </v-row>
+            <div v-else class="ma-5">
+                No previous results detected
+            </div>
+        </v-card>
+
+        <v-alert
+            v-if="messageResult !== ''"
+            :color="messageResult.includes('decay') ? 'error' : 'success'"
+            class="mt-5"
+            variant="elevated"
+        >
+            {{ messageResult }}
+        </v-alert>
     </v-row>
 </template>
 
 <script setup lang="ts">
     import { computed, onMounted, ref } from 'vue';
-    import { users, handleGetUsers } from '../api/users';
+    import { users, handleGetUsers, message } from '../api/users';
     import { userHeaders } from '../headers/user_headers';
     import EditUser from '../components/user_forms/EditUser.vue';
     import EditPassword from '../components/user_forms/EditPassword.vue';
     import AddUser from '../components/user_forms/AddUser.vue';
     import DeleteUser from '../components/user_forms/DeleteUser.vue';
     import type { UserRead } from '../types/users';
-    import { formRetrain, loading, retrainModel, setFormToDefault } from '@/api/monitoring';
+    import { formRetrain, getTrainingResult, getTrainingStatus, lastGamesResults, loading, messageResult,
+        messageRetrain, messageStatus, setFormToDefault } from '@/api/monitoring';
     import { numbersRules } from '@/rules/rules';
+    import ConfirmRetrain from '@/components/retrain_model/ConfirmRetrain.vue';
 
 
     const search = ref('');
     const selectedRoles = ref<string[]>([]);
-    const message = ref<string>("");
+    const results = ref<Record<string, string>>();
+    const plots = ref<Array<string>>([]);
+    const apiBaseUrl = 'http://127.0.0.1:5000'
 
     // Get all users at start
     onMounted(async () => {
             await handleGetUsers();
             setFormToDefault();
+
+            await lastGamesResults()
+                .then((data) => {
+                    results.value = data;
+                    if (results.value['should_retrain'] === "true") {
+                        messageRetrain.value = "Model is decaying and should be retrained.";
+                    } else {
+                        messageRetrain.value = "Model metrics are correct. Retraining not required.";
+                    }
+                })
+                .catch((err) => { message.value = err });
     });
 
     const availableRoles = computed(() => {
@@ -270,23 +365,46 @@ This module is only accessible to users with the "Admin" role. It allows them to
 
 
     /**
-     * Handles the form submit process by calling the Retrain Model Form Submit function.
+     * Handles the submit process by calling the Get Training Status function.
      * Finally, it closes the pop-up window.
      * 
      * @async
      * @handler
      */
-    async function handleFormRetrainModel(): Promise<void> {
+    async function handleGetTrainingStatus(): Promise<void> {
         loading.value = true;
 
         try {
-            await retrainModel()
-                    .then((data) => { message.value = data })
-                    .catch((err) => { message.value = err });
-            console.warn(message.value);
+            await getTrainingStatus()
+                    .then((data) => { messageStatus.value = data })
+                    .catch((err) => { messageStatus.value = err });
         }
         catch (error) {
-            console.error('Error submitting retrain model form:', error);
+            console.error('Error submitting get training status form:', error);
+        }
+        finally {
+            loading.value = false;
+        }
+    };
+
+
+    /**
+     * Handles the submit process by calling the Get Training Result function.
+     * Finally, it closes the pop-up window.
+     * 
+     * @async
+     * @handler
+     */
+    async function handleGetLastTrainingResults(): Promise<void> {
+        loading.value = true;
+
+        try {
+            await getTrainingResult()
+                    .then((data) => { plots.value = data })
+                    .catch((err) => { messageRetrain.value = err });
+        }
+        catch (error) {
+            console.error('Error submitting get training results form:', error);
         }
         finally {
             loading.value = false;

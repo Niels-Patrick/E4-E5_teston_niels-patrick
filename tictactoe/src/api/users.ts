@@ -283,11 +283,11 @@ export const handleEditPasswordSubmitForm = async (dialog: Ref<boolean>): Promis
  * 
  * @async
  * @param dialog - The current state of the dialog window.
- * @returns {Promise<User>} - A User object in case of success.
- *                          - An error message in case of failure.
+ * @returns {Promise<string>} - A message in case of success.
+ *                            - An error message in case of failure.
  * @throws Will rethrow any other errors.
  */
-export const submitAddUserForm = async (dialog: Ref<boolean>): Promise<User> => {
+export const submitAddUserForm = async (dialog: Ref<boolean>): Promise<string> => {
     handleCheckTokenValidity();
 
     const payload = cloneDeep(formUser.value);
@@ -305,10 +305,7 @@ export const submitAddUserForm = async (dialog: Ref<boolean>): Promise<User> => 
             // Fetches the list of users to update displayed users' data
             getUsers()
                 .then((data) => {users.value = data})
-                .catch((err) => {
-                    message.value;
-                    console.error('Error:', err)
-                });
+                .catch((err) => {console.error('Error:', err)});
 
             return response.data.message;
         })
@@ -336,7 +333,7 @@ export const handleAddUserSubmitForm = async (dialog: Ref<boolean>): Promise<voi
         // Checks if the password and the confirm password are matching
         if (formUser.value.password == confirmPassword.value) {
             await submitAddUserForm(dialog)
-                .then()
+                .then((data) => {message.value = data})
                 .catch((err) => {
                     message.value = err;
                     console.error('Error:', err)

@@ -200,7 +200,7 @@ This module provides an authentication form to log in the TicTacToe application.
         confirmPasswordRules } from '../rules/rules';
     import { useRouter } from "vue-router";
     import { onMounted, ref } from 'vue';
-    import { formRef, formUser, handleAddUserSubmitForm, confirmPassword } from '@/api/users';
+    import { formRef, formUser, confirmPassword, submitAddUserForm } from '@/api/users';
     import { getRoles, roles } from '@/api/roles';
 
 
@@ -233,8 +233,11 @@ This module provides an authentication form to log in the TicTacToe application.
         });
 
         try {
-            await handleAddUserSubmitForm(ref(false));
-            signIn.value = true;
+            await submitAddUserForm(ref(false))
+                    .then((data) => {message.value = data})
+                    .catch((err) => {message.value = err});
+            if (message.value.includes("Success")) signIn.value = true;
+
         }
         catch (error) {
             console.error('Error submitting add user form:', error);

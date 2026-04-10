@@ -8,10 +8,10 @@ This module provides an authentication form to log in the TicTacToe application.
     <v-container>
         <v-row class="justify-center" v-if="!signIn">
             <v-card
-                title="Sign up to TicTacToe"
+                title="Create an account on TicTacToe AI"
                 width="40%"
             >
-                <v-form @submit.prevent="handleFormSignUpSubmit" ref="formRef">
+                <v-form @submit.prevent="">
                     <!-- Username field -->
                     <v-col
                         sm="6"
@@ -77,17 +77,11 @@ This module provides an authentication form to log in the TicTacToe application.
                         />
                     </v-col>
 
-                    <v-btn
-                        text="Submit"
-                        type="submit"
-                        v-model:loading="loading"
-                        class="my-4"
-                    />
+                    <ConfirmSignup :formUser="formUser" />
                 </v-form>
 
                 <v-alert
                     v-if="message"
-                    :color="message.includes('Error') ? 'error' : 'success'"
                     class="mt-5"
                     variant="elevated"
                 >
@@ -98,7 +92,7 @@ This module provides an authentication form to log in the TicTacToe application.
 
         <v-row class="justify-center" v-if="signIn">
             <v-card
-                title="Sign in to TicTacToe"
+                title="Sign in to TicTacToe AI"
                 width="40%"
             >
                 <v-form @submit.prevent="handleSubmitLoginForm(router)" ref="formRefLogin">
@@ -143,7 +137,6 @@ This module provides an authentication form to log in the TicTacToe application.
 
                 <v-alert
                     v-if="message"
-                    :color="message.includes('Error') ? 'error' : 'success'"
                     class="mt-5"
                     variant="elevated"
                 >
@@ -184,7 +177,7 @@ This module provides an authentication form to log in the TicTacToe application.
                                 class="my-4"
                                 @click="signIn = false"
                             >
-                                Sign Up
+                                Create an Account
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -195,55 +188,23 @@ This module provides an authentication form to log in the TicTacToe application.
 </template>
 
 <script setup lang="ts">
-    import { username, password, message, formRefLogin, handleSubmitLoginForm, loading } from '../api/login';
+    import { username, password, message, formRefLogin, handleSubmitLoginForm, loading, signIn } from '../api/login';
     import { usernameLoginRules, passwordLoginRules, emailRules, nameRules, passwordRules,
         confirmPasswordRules } from '../rules/rules';
     import { useRouter } from "vue-router";
     import { onMounted, ref } from 'vue';
-    import { formRef, formUser, confirmPassword, submitAddUserForm } from '@/api/users';
+    import { formUser, confirmPassword } from '@/api/users';
     import { getRoles, roles } from '@/api/roles';
+    import ConfirmSignup from '@/components/signup_form/ConfirmSignup.vue';
 
 
     const router = useRouter();
     const showPassword = ref(false);
     const showConfirmPassword = ref(false);
-    const signIn = ref(false);
 
     onMounted(() => {
         getRoles()
             .then((data) => { roles.value = data })
             .catch((err) => { console.error('Error', err) });
     });
-
-
-    /**
-     * Handles the form submit process by calling the Add User Form Submit handler, then the Get Users handler to
-     * refresh the data table.
-     * Finally, it closes the pop-up window.
-     * 
-     * @async
-     * @handler
-     */
-    async function handleFormSignUpSubmit(): Promise<void> {
-        loading.value = true;
-
-        roles.value.forEach((role) => {
-            if (role.name == "Player") formUser.value.idRole = role.idRole;
-            console.warn(role);
-        });
-
-        try {
-            await submitAddUserForm(ref(false))
-                    .then((data) => {message.value = data})
-                    .catch((err) => {message.value = err});
-            if (message.value.includes("Success")) signIn.value = true;
-
-        }
-        catch (error) {
-            console.error('Error submitting add user form:', error);
-        }
-        finally {
-            loading.value = false;
-        }
-    };
 </script>

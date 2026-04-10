@@ -25,7 +25,7 @@ The process takes place in 2 steps, with a pop-up confirmation window opening up
                     <!-- Used only to display the pop-up window title -->
                     <v-card
                         prepend-icon="mdi-dumbbell"
-                        title="Confirm Deletion"
+                        title="Confirm Retrain"
                         color="white"
                     >
                     <v-card-text class="text-center">

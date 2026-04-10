@@ -103,7 +103,6 @@ This module is only accessible to users with the "Admin" role. It allows them to
 
             <v-alert
                 v-if="message"
-                :color="message.includes('Error') ? 'error' : 'success'"
                 class="mt-5"
                 variant="elevated"
             >
@@ -215,7 +214,6 @@ This module is only accessible to users with the "Admin" role. It allows them to
                         <v-col>
                             <v-alert
                                 v-if="messageStatus !== ''"
-                                :color="messageStatus.includes('error') ? 'error' : ''"
                                 class="mx-5"
                                 variant="elevated"
                             >
@@ -228,7 +226,6 @@ This module is only accessible to users with the "Admin" role. It allows them to
 
             <v-alert
                 v-if="messageRetrain !== ''"
-                :color="messageRetrain.includes('decay') ? 'error' : 'success'"
                 class="mt-5"
                 variant="elevated"
             >
@@ -282,7 +279,6 @@ This module is only accessible to users with the "Admin" role. It allows them to
 
         <v-alert
             v-if="messageResult !== ''"
-            :color="messageResult.includes('decay') ? 'error' : 'success'"
             class="mt-5"
             variant="elevated"
         >

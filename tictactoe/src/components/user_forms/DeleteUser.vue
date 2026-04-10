@@ -16,7 +16,6 @@ up when clicking on the delete button.
                 <!-- The button that opens the pop-up confirmation window -->
                 <v-btn
                     icon
-                    style="background-color: red;"
                     v-bind="activatorProps"
                     class="tiny-btn"
                 >
@@ -34,7 +33,7 @@ up when clicking on the delete button.
                         color="white"
                     >
                     <v-card-text class="text-center">
-                        <h3>Are you sure you want to delete this user?</h3>
+                        <h3>Are you sure you want to delete this account?</h3>
                     </v-card-text>
             
                     <v-divider />
@@ -66,16 +65,19 @@ up when clicking on the delete button.
 </template>
 
 <script setup lang="ts">
-    import { shallowRef } from 'vue';
+    import { computed, shallowRef } from 'vue';
     import { handleDeleteUser } from '../../api/users';
-    import { loading } from '../../api/login';
+    import { handleSubmitLogout, loading } from '../../api/login';
     import type { User } from '../../types/users';
 
 
     const deleteUserDialog = shallowRef(false);
 
     // Defines the properties of the component (like the parameters of a function)
-    const parentProps = defineProps<{user: User}>();
+    const parentProps = defineProps<{ user: User, parentType: string }>();
+
+    // Restrict the access to this child component to the UserPage parent component only
+    const autoLogout = computed(() => parentProps.parentType === 'UserPage');
 
 
     /**
@@ -99,6 +101,7 @@ up when clicking on the delete button.
         }
         finally {
             loading.value = false;
+            if (autoLogout) handleSubmitLogout();
         }
     };
 </script>

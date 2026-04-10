@@ -12,6 +12,7 @@ export const username = ref('');
 export const password = ref('');
 export const message = ref('');  // Message to display when submitting form
 export const loading = ref(false);  // Boolean to manage loading animation
+export const signIn = ref(true);
 
 
 /**

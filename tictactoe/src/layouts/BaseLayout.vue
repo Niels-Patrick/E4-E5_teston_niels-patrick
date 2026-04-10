@@ -39,9 +39,9 @@ pages content.
               <v-btn
                 v-bind="props"
                 class="tiny-btn"
-              >
-                <v-icon>mdi-menu</v-icon>
-              </v-btn>
+                prepend-icon="mdi-menu"
+                text="Menu"
+              />
             </template>
             <v-list>
               <v-list-item

@@ -1,32 +1,25 @@
 import { mount, flushPromises } from "@vue/test-utils";
 import { describe, it, expect, vi } from "vitest";
+import { ref } from "vue";
 import Game from "../src/pages/Game.vue";
 
-vi.mock("../src/api/users", () => {
-  const { ref } = require("vue");
-  return {
-    handleGetUser: vi.fn(),
-    user: ref({ username: "TestUser" }),
-  };
-});
 
-vi.mock("../src/api/token", () => {
-  const { ref } = require("vue");
-  return {
-    getToken: vi.fn(),
-    idUser: ref(1),
-  };
-});
+vi.mock("../src/api/users", () => ({
+  handleGetUser: vi.fn(),
+  user: ref({ username: "TestUser" }),
+}));
 
-vi.mock("../src/api/games", () => {
-  const { ref } = require("vue");
-  return {
-    formGame: ref({ gameDate: null, moves: null }),
-    game: ref({ idGame: undefined }),
-    handleAddGameSubmitForm: vi.fn(),
-    handleEditGameSubmitForm: vi.fn(),
-  };
-});
+vi.mock("../src/api/token", () => ({
+  getToken: vi.fn(),
+  idUser: ref(1),
+}));
+
+vi.mock("../src/api/games", () => ({
+  formGame: ref({ gameDate: null, moves: null }),
+  game: ref({ idGame: undefined }),
+  handleAddGameSubmitForm: vi.fn(),
+  handleEditGameSubmitForm: vi.fn(),
+}));
 
 vi.mock("../src/api/ai", () => ({
   playAiTurn: vi.fn().mockResolvedValue(["X", "O", "", "", "", "", "", "", ""]),

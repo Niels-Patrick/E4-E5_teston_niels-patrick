@@ -41,6 +41,9 @@ This module also allows the user to edit their information (except their role, o
                 <v-col class="mx-2">
                     <EditPassword :user="user" />
                 </v-col>
+                <v-col class="mx-2">
+                    <DeleteUser :user="user" parentType="UserPage" />
+                </v-col>
             </v-row>
         </e-card>
     </v-row>
@@ -52,6 +55,7 @@ This module also allows the user to edit their information (except their role, o
     import { getToken, idUser } from '../api/token';
     import EditUser from '../components/user_forms/EditUser.vue';
     import EditPassword from '../components/user_forms/EditPassword.vue';
+    import DeleteUser from '@/components/user_forms/DeleteUser.vue';
 
 
     message.value = '';

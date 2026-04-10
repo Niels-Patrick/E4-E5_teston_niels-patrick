@@ -3,10 +3,10 @@
  */
 
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import { ref } from "vue";
 import { handleSubmitLogout } from "./login";
 import type { Role } from "./roles";
+import { apiClient } from './client';
 
 
 // To store user's data
@@ -26,7 +26,7 @@ export interface JwtPayload {
 
 /**
  * Gets the current user's information contained in the JWT token
- * 
+ *
  * @function
  */
 export function getToken(): void {
@@ -45,18 +45,18 @@ export function getToken(): void {
 
 /**
  * Refreshes a JWT token and stores it.
- * 
+ *
  * @async
  * @function
- * 
+ *
  * @param username - The username of the current sessions's user.
- * 
+ *
  * @returns {Promise<void>}
- * 
+ *
  * @throws Will rethrow any other errors.
  */
 export const refreshTokens = async (): Promise<void> => {
-    return await axios.get('http://127.0.0.1:5000/api/token/', {
+    return await apiClient.get('/token/', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('refresh_token')}`
         }
@@ -76,16 +76,16 @@ export const refreshTokens = async (): Promise<void> => {
 
 /**
  * Checks the time validity of the current session access or refresh token.
- * 
+ *
  * @async
  * @function
- *  
+ *
  * @returns {Promise<boolean>}
  *  - True if the token is still valid or false if it has expired.
  *  - A message in case of failure.
  */
 export const checkTokenValidity = async (token: string | null): Promise<boolean> => {
-    return await axios.post('http://127.0.0.1:5000/api/token/', {
+    return await apiClient.post('/token/', {
         token: token
     })
         .then((response) => {
@@ -101,7 +101,7 @@ export const checkTokenValidity = async (token: string | null): Promise<boolean>
 
 /**
  * Handler to manage the token validity checking.
- * 
+ *
  * @async
  * @handler
  */

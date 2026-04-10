@@ -101,7 +101,7 @@ up when clicking on the delete button.
         }
         finally {
             loading.value = false;
-            if (autoLogout) handleSubmitLogout();
+            if (autoLogout.value) handleSubmitLogout();
         }
     };
 </script>

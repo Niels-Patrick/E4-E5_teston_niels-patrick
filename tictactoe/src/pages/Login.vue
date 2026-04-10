@@ -202,8 +202,8 @@ This module provides an authentication form to log in the TicTacToe application.
     const showPassword = ref(false);
     const showConfirmPassword = ref(false);
 
-    onMounted(() => {
-        getRoles()
+    onMounted(async () => {
+        await getRoles()
             .then((data) => { roles.value = data })
             .catch((err) => { console.error('Error', err) });
     });

@@ -2,9 +2,9 @@
  * Module to store the Role object definition and all role related functions and variables.
  */
 
-import axios from 'axios';
 import { ref } from 'vue';
 import { handleCheckTokenValidity } from './token';
+import { apiClient } from './client';
 
 
 // Definition of type Role
@@ -19,7 +19,7 @@ export const role = ref<Role>();
 
 /**
  * Fetches the list of roles' data from the backend.
- * 
+ *
  * @async
  * @function
  * @returns {Promise<Role[]>} - An array of Role objects if the request is
@@ -29,7 +29,7 @@ export const role = ref<Role>();
 export const getRoles = async (): Promise<Role[]> => {
     handleCheckTokenValidity();
 
-    return await axios.get('http://127.0.0.1:5000/api/role/', {
+    return await apiClient.get('/role/', {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
             }

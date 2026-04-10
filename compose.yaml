@@ -1,0 +1,18 @@
+services:
+  e4-e5-frontend:
+    build:
+      context: ./tictactoe
+      dockerfile: Dockerfile
+    container_name: e4-e5-frontend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    environment:
+      API_UPSTREAM_HOST: ${API_UPSTREAM_HOST:-e2-e3-tictactoe}
+      API_UPSTREAM_PORT: ${API_UPSTREAM_PORT:-5000}
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
+    name: ${SHARED_DOCKER_NETWORK:-tictactoe-shared-network}

@@ -10,6 +10,14 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.VITE_DEV_API_TARGET || 'http://127.0.0.1:5000',
+        changeOrigin: true,
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -19,7 +27,11 @@ export default defineConfig({
     globals: true,       // optional: use describe/it without imports
     environment: "jsdom", // needed for DOM rendering
     deps: {
-      inline: ['vuetify']
+      optimizer: {
+        web: {
+          include: ['vuetify']
+        }
+      }
     }
   }
 })

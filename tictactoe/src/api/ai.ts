@@ -3,7 +3,7 @@
  */
 
 import { handleCheckTokenValidity } from "./token";
-import axios from "axios";
+import { apiClient } from './client';
 
 
 /**
@@ -17,7 +17,7 @@ import axios from "axios";
 export const playAiTurn = async (board: string[]): Promise<string[]> => {
     handleCheckTokenValidity();
 
-    return await axios.post('http://127.0.0.1:5000/api/ai/',
+    return await apiClient.post('/ai/',
     {
         board: board,
         aiMark: "O"

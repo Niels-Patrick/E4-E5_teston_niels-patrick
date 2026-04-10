@@ -2,10 +2,10 @@
  * Module to store all functions and variables related to login and logout management.
  */
 
-import axios from "axios";
 import { ref } from "vue";
 import type { Router } from "vue-router";
 import { handleCheckTokenValidity } from "./token";
+import { apiClient } from './client';
 
 export const formRefLogin = ref();  // Used to check if a form is valid or not
 export const username = ref('');
@@ -18,7 +18,7 @@ export const signIn = ref(true);
 /**
  * Submits the login form and handles the authentication, then stores the
  * access and refresh tokens in local storage.
- * 
+ *
  * @async
  * @function
  * @returns {Promise<void>}
@@ -27,7 +27,7 @@ export const signIn = ref(true);
 export const submitLoginForm = async (router: Router): Promise<void> => {
     await handleCheckTokenValidity();
 
-    return await axios.post('http://127.0.0.1:5000/api/login/', {
+    return await apiClient.post('/login/', {
         username: username.value,
         password: password.value
     })
@@ -55,7 +55,7 @@ export const submitLoginForm = async (router: Router): Promise<void> => {
 
 /**
  * Handler to wrap the submitLoginForm function.
- * 
+ *
  * @async
  * @handler
  */
@@ -81,7 +81,7 @@ export const handleSubmitLoginForm = async (router: Router): Promise<void> => {
 
 /**
  * Submits the login form and handles the authentication.
- * 
+ *
  * @async
  * @function
  * @param username - The username of the current session's user.
@@ -91,7 +91,7 @@ export const handleSubmitLoginForm = async (router: Router): Promise<void> => {
 export const submitLogout = async (): Promise<void> => {
     await handleCheckTokenValidity();
 
-    return await axios.delete(`http://127.0.0.1:5000/api/login/`, {
+    return await apiClient.delete('/login/', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -113,7 +113,7 @@ export const submitLogout = async (): Promise<void> => {
 
 /**
  * Handler to wrap the submitLogout function.
- * 
+ *
  * @async
  * @handler
  * @param username - The username of the current session's user.

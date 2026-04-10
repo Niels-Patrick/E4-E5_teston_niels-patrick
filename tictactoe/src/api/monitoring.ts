@@ -3,9 +3,9 @@
  */
 
 import { handleCheckTokenValidity } from "./token";
-import axios from "axios";
 import { cloneDeep } from 'lodash';
 import { ref } from "vue";
+import { apiClient } from './client';
 
 
 export const loading = ref<boolean>(false);  // Boolean to manage loading animation
@@ -25,7 +25,7 @@ export const formRetrain = ref({
 
 /**
  * Empties the retrain form fields
- * 
+ *
  * @function
  * @returns {void}
  */
@@ -40,7 +40,7 @@ export function setFormToDefault(): void {
 
 /**
  * Submits an retrain model request to backend.
- * 
+ *
  * @async
  * @returns {Promise<Record<string, string>>} - A success message.
  *                            - An error message in case of failure.
@@ -51,7 +51,7 @@ export const lastGamesResults = async (): Promise<Record<string, string>> => {
 
     const payload = cloneDeep(formRetrain.value);
 
-    return await axios.get('http://127.0.0.1:5000/api/monitoring/last-game-results',
+    return await apiClient.get('/monitoring/last-game-results',
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -68,7 +68,7 @@ export const lastGamesResults = async (): Promise<Record<string, string>> => {
 
 /**
  * Submits an retrain model request to backend.
- * 
+ *
  * @async
  * @returns {Promise<string>} - A success message.
  *                            - An error message in case of failure.
@@ -79,7 +79,7 @@ export const retrainModel = async (): Promise<string> => {
 
     const payload = cloneDeep(formRetrain.value);
 
-    return await axios.post('http://127.0.0.1:5000/api/monitoring/retrain-model', payload,
+    return await apiClient.post('/monitoring/retrain-model', payload,
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -96,7 +96,7 @@ export const retrainModel = async (): Promise<string> => {
 
 /**
  * Gets the results of the model training.
- * 
+ *
  * @async
  * @returns {Promise<Array<string>>} - A success message.
  *                            - An error message in case of failure.
@@ -105,7 +105,7 @@ export const retrainModel = async (): Promise<string> => {
 export const getTrainingResult = async (): Promise<Array<string>> => {
     handleCheckTokenValidity();
 
-    return await axios.get('http://127.0.0.1:5000/api/monitoring/training-result',
+    return await apiClient.get('/monitoring/training-result',
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -123,7 +123,7 @@ export const getTrainingResult = async (): Promise<Array<string>> => {
 
 /**
  * Gets the status of the model training.
- * 
+ *
  * @async
  * @returns {Promise<string>} - A success message.
  *                            - An error message in case of failure.
@@ -132,7 +132,7 @@ export const getTrainingResult = async (): Promise<Array<string>> => {
 export const getTrainingStatus = async (): Promise<string> => {
     handleCheckTokenValidity();
 
-    return await axios.get('http://127.0.0.1:5000/api/monitoring/training-status',
+    return await apiClient.get('/monitoring/training-status',
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`

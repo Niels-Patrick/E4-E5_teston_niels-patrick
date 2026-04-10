@@ -2,11 +2,11 @@
  * Module to store the User object definition and all user related functions and variables.
  */
 
-import axios from 'axios';
 import { ref, type Ref } from 'vue';
 import { handleCheckTokenValidity } from './token';
 import type { User, UserRead } from '../types/users';
 import { cloneDeep } from 'lodash';
+import { apiClient } from './client';
 
 export const message = ref('');  // Message to display when submitting form
 export const formRef = ref();  // Used to check if a form is valid or not
@@ -32,7 +32,7 @@ user.value = formUser.value;
 
 /**
  * Pre-fills a form using a specific user's data.
- * 
+ *
  * @function
  * @param item - A specific user's data.
  * @returns {void}
@@ -46,7 +46,7 @@ export function preFillForm(item: User) {
 
 /**
  * Empties the user form fields
- * 
+ *
  * @function
  * @returns {void}
  */
@@ -64,7 +64,7 @@ export function emptyForm(): void {
 
 /**
  * Fetches a specific user's data from the backend.
- * 
+ *
  * @async
  * @param id - The id of the user.
  * @returns {Promise<User>} - A User object if the request is successful.
@@ -73,7 +73,7 @@ export function emptyForm(): void {
 export const getUser = async (id: string): Promise<UserRead> => {
     handleCheckTokenValidity();
 
-    return await axios.get<{ user: UserRead, message: string }>(`http://127.0.0.1:5000/api/user/${id}`, {
+    return await apiClient.get<{ user: UserRead, message: string }>(`/user/${id}`, {
         headers: {
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
             }
@@ -91,7 +91,7 @@ export const getUser = async (id: string): Promise<UserRead> => {
 
 /**
  * Handler to wrap the getUser function.
- * 
+ *
  * @async
  * @handler
  */
@@ -107,7 +107,7 @@ export const handleGetUser = async (id: string): Promise<void> => {
 
 /**
  * Fetches the list of users' data from the backend.
- * 
+ *
  * @async
  * @returns {Promise<User[]>} - An array of User objects if the request is
  *                              successful.
@@ -116,7 +116,7 @@ export const handleGetUser = async (id: string): Promise<void> => {
 export const getUsers = async (): Promise<UserRead[]> => {
     handleCheckTokenValidity();
 
-    return await axios.get<{ users: UserRead[], message: string }>('http://127.0.0.1:5000/api/user/', {
+    return await apiClient.get<{ users: UserRead[], message: string }>('/user/', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -134,7 +134,7 @@ export const getUsers = async (): Promise<UserRead[]> => {
 
 /**
  * Handler to wrap the getUsers function.
- * 
+ *
  * @async
  * @handler
  */
@@ -150,7 +150,7 @@ export const handleGetUsers = async (): Promise<void> => {
 
 /**
  * Submits an edit user pop-up form.
- * 
+ *
  * @async
  * @returns {Promise<User>} - A User object in case of success.
  *                          - An error message in case of failure.
@@ -161,7 +161,7 @@ export const submitEditUserForm = async (dialog: Ref<boolean>): Promise<User> =>
 
     const payload = cloneDeep(formUser.value);
 
-    return await axios.put(`http://127.0.0.1:5000/api/user/`, payload,
+    return await apiClient.put('/user/', payload,
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -188,7 +188,7 @@ export const submitEditUserForm = async (dialog: Ref<boolean>): Promise<User> =>
 
 /**
  * Handler to wrap the submitEditUserForm function.
- * 
+ *
  * @async
  * @handler
  * @param dialog - A boolean variable containing the state of the dialog window
@@ -213,7 +213,7 @@ export const handleEditUserSubmitForm = async (dialog: Ref<boolean>): Promise<vo
 
 /**
  * Submits an edit password pop-up form.
- * 
+ *
  * @async
  * @returns {Promise<User>} - A User object in case of success.
  *                          - An error message in case of failure.
@@ -222,7 +222,7 @@ export const handleEditUserSubmitForm = async (dialog: Ref<boolean>): Promise<vo
 export const submitEditPasswordForm = async (dialog: Ref<boolean>): Promise<User> => {
     handleCheckTokenValidity();
 
-    return await axios.put('http://127.0.0.1:5000/api/user/edit-password', {
+    return await apiClient.put('/user/edit-password', {
         username: formUser.value.username,
         password: formUser.value.password,
         old_password: oldPassword.value
@@ -249,7 +249,7 @@ export const submitEditPasswordForm = async (dialog: Ref<boolean>): Promise<User
 
 /**
  * Handler to wrap the submitEditPasswordForm function.
- * 
+ *
  * @async
  * @handler
  * @param dialog - A boolean variable containing the state of the dialog window
@@ -280,7 +280,7 @@ export const handleEditPasswordSubmitForm = async (dialog: Ref<boolean>): Promis
 
 /**
  * Submits an add user pop-up form.
- * 
+ *
  * @async
  * @param dialog - The current state of the dialog window.
  * @returns {Promise<string>} - A message in case of success.
@@ -292,7 +292,7 @@ export const submitAddUserForm = async (dialog: Ref<boolean>): Promise<string> =
 
     const payload = cloneDeep(formUser.value);
 
-    return await axios.post('http://127.0.0.1:5000/api/user/', payload,
+    return await apiClient.post('/user/', payload,
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -301,7 +301,7 @@ export const submitAddUserForm = async (dialog: Ref<boolean>): Promise<string> =
         .then((response) => {
             dialog.value = false;  // Closes the pop-up window
             console.log(response.data.message);
-            
+
             // Fetches the list of users to update displayed users' data
             getUsers()
                 .then((data) => {users.value = data})
@@ -319,7 +319,7 @@ export const submitAddUserForm = async (dialog: Ref<boolean>): Promise<string> =
 
 /**
  * Handler to wrap the submitAddUserForm function.
- * 
+ *
  * @async
  * @handler
  * @param dialog - A boolean variable containing the state of the dialog window
@@ -351,7 +351,7 @@ export const handleAddUserSubmitForm = async (dialog: Ref<boolean>): Promise<voi
 
 /**
  * Submits a specific user deletion request.
- * 
+ *
  * @async
  * @param username - The username of the user to delete.
  * @returns {Promise<void>}
@@ -360,7 +360,7 @@ export const handleAddUserSubmitForm = async (dialog: Ref<boolean>): Promise<voi
 export const deleteUser = async (username: string, dialog: Ref<boolean>): Promise<void> => {
     handleCheckTokenValidity();
 
-    return await axios.delete(`http://127.0.0.1:5000/api/user/${username}`, {
+    return await apiClient.delete(`/user/${username}`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -386,7 +386,7 @@ export const deleteUser = async (username: string, dialog: Ref<boolean>): Promis
 
 /**
  * Handler to wrap the deleteUser function.
- * 
+ *
  * @async
  * @handler
  * @param username - The username of the user to delete.

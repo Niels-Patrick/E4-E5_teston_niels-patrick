@@ -88,7 +88,7 @@ This module is only accessible to users with the "Admin" role. It allows them to
                                 <EditPassword :user="item" />
                             </v-col>
                             <v-col class="px-0">
-                                <DeleteUser :user="item" />
+                                <DeleteUser :user="item" parentType="AdminDashboard" />
                             </v-col>
                         </v-row>
                     </template>
@@ -256,7 +256,7 @@ This module is only accessible to users with the "Admin" role. It allows them to
                     <div v-for="plot in plots" :key="plot">
                         <img
                             v-if="plot.includes('gauge')"
-                            :src="apiBaseUrl + plot"
+                            :src="getPlotUrl(plot)"
                             alt="Training Plot"
                         />
                     </div>
@@ -266,7 +266,7 @@ This module is only accessible to users with the "Admin" role. It allows them to
                     <div v-for="plot in plots" :key="plot">
                         <img
                             v-if="plot.includes('evolution')"
-                            :src="apiBaseUrl + plot"
+                            :src="getPlotUrl(plot)"
                             alt="Training Plot"
                         />
                     </div>
@@ -298,6 +298,7 @@ This module is only accessible to users with the "Admin" role. It allows them to
     import type { UserRead } from '../types/users';
     import { formRetrain, getTrainingResult, getTrainingStatus, lastGamesResults, loading, messageResult,
         messageRetrain, messageStatus, setFormToDefault } from '@/api/monitoring';
+    import { resolveApiUrl } from '@/api/client';
     import { numbersRules } from '@/rules/rules';
     import ConfirmRetrain from '@/components/retrain_model/ConfirmRetrain.vue';
 
@@ -306,7 +307,6 @@ This module is only accessible to users with the "Admin" role. It allows them to
     const selectedRoles = ref<string[]>([]);
     const results = ref<Record<string, string>>();
     const plots = ref<Array<string>>([]);
-    const apiBaseUrl = 'http://127.0.0.1:5000'
 
     // Get all users at start
     onMounted(async () => {
@@ -406,4 +406,8 @@ This module is only accessible to users with the "Admin" role. It allows them to
             loading.value = false;
         }
     };
+
+    function getPlotUrl(plot: string): string {
+        return resolveApiUrl(plot);
+    }
 </script>

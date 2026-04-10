@@ -2,11 +2,11 @@
  * Module to store the Game object definition and all game related functions and variables.
  */
 
-import axios from 'axios';
 import { ref, type Ref } from 'vue';
 import { handleCheckTokenValidity } from './token';
 import type { Game, GameRead } from '../types/games';
 import { cloneDeep } from 'lodash';
+import { apiClient } from './client';
 
 export const message = ref('');  // Message to display when submitting form
 export const formRef = ref();  // Used to check if a form is valid or not
@@ -29,7 +29,7 @@ game.value = formGame.value;
 
 /**
  * Pre-fills a form using a specific game's data.
- * 
+ *
  * @function
  * @param item - A specific game's data.
  * @returns {void}
@@ -45,7 +45,7 @@ export function preFillForm(item: Game) {
 
 /**
  * Empties the game form fields
- * 
+ *
  * @function
  * @returns {void}
  */
@@ -61,7 +61,7 @@ export function emptyForm(): void {
 
 /**
  * Loads the saved game's data from the backend.
- * 
+ *
  * @async
  * @returns {Promise<Game>} - A Game object if the request is successful.
  * @throws Will rethrow any other errors.
@@ -69,7 +69,7 @@ export function emptyForm(): void {
 export const loadsGame = async (): Promise<GameRead | null> => {
     handleCheckTokenValidity();
 
-    return await axios.get<{ game: GameRead, message: string }>(`http://127.0.0.1:5000/api/game/last-game`, {
+    return await apiClient.get<{ game: GameRead, message: string }>('/game/last-game', {
         headers: {
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`
             }
@@ -87,7 +87,7 @@ export const loadsGame = async (): Promise<GameRead | null> => {
 
 /**
  * Handler to wrap the loadsGame function.
- * 
+ *
  * @async
  * @handler
  */
@@ -109,7 +109,7 @@ export const handleLoadsGame = async (): Promise<void> => {
 
 /**
  * Fetches the list of games' data from the backend.
- * 
+ *
  * @async
  * @returns {Promise<Game[]>} - An array of Game objects if the request is successful.
  * @throws Will rethrow any other errors.
@@ -117,7 +117,7 @@ export const handleLoadsGame = async (): Promise<void> => {
 export const getGames = async (): Promise<GameRead[]> => {
     handleCheckTokenValidity();
 
-    return await axios.get<{ games: GameRead[], message: string }>('http://127.0.0.1:5000/api/game/', {
+    return await apiClient.get<{ games: GameRead[], message: string }>('/game/', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -135,7 +135,7 @@ export const getGames = async (): Promise<GameRead[]> => {
 
 /**
  * Handler to wrap the getGames function.
- * 
+ *
  * @async
  * @handler
  */
@@ -151,7 +151,7 @@ export const handleGetGames = async (): Promise<void> => {
 
 /**
  * Submits an edit game pop-up form.
- * 
+ *
  * @async
  * @returns {Promise<Game>} - A Game object in case of success.
  *                          - An error message in case of failure.
@@ -160,11 +160,11 @@ export const handleGetGames = async (): Promise<void> => {
 export const submitEditGameForm = async (): Promise<Game> => {
     handleCheckTokenValidity();
 
-    let payload = cloneDeep(formGame.value);
+    const payload: GameRead = cloneDeep(formGame.value);
     console.warn(game.value.idGame);
-    payload["idGame"] = game.value.idGame;
+    payload.idGame = game.value.idGame;
 
-    return await axios.put(`http://127.0.0.1:5000/api/game/`, payload,
+    return await apiClient.put('/game/', payload,
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -190,7 +190,7 @@ export const submitEditGameForm = async (): Promise<Game> => {
 
 /**
  * Handler to wrap the submitEditGameForm function.
- * 
+ *
  * @async
  * @handler
  */
@@ -206,7 +206,7 @@ export const handleEditGameSubmitForm = async (): Promise<void> => {
 
 /**
  * Submits an add game pop-up form.
- * 
+ *
  * @async
  * @returns {Promise<Game>} - A Game object in case of success.
  *                          - An error message in case of failure.
@@ -217,7 +217,7 @@ export const submitAddGameForm = async (): Promise<Game> => {
 
     const payload = cloneDeep(formGame.value);
 
-    return await axios.post('http://127.0.0.1:5000/api/game/', payload,
+    return await apiClient.post('/game/', payload,
     {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
@@ -225,7 +225,7 @@ export const submitAddGameForm = async (): Promise<Game> => {
     })
         .then((response) => {
             console.log(response.data.message);
-            
+
             // Fetches the list of games to update displayed games' data
             getGames()
                 .then((data) => {games.value = data})
@@ -246,7 +246,7 @@ export const submitAddGameForm = async (): Promise<Game> => {
 
 /**
  * Handler to wrap the submitAddGameForm function.
- * 
+ *
  * @async
  * @handler
  */
@@ -262,7 +262,7 @@ export const handleAddGameSubmitForm = async (): Promise<void> => {
 
 /**
  * Submits a specific game deletion request.
- * 
+ *
  * @async
  * @param id - The ID of the game to delete.
  * @returns {Promise<void>}
@@ -271,7 +271,7 @@ export const handleAddGameSubmitForm = async (): Promise<void> => {
 export const deleteGame = async (id: string, dialog: Ref<boolean>): Promise<void> => {
     handleCheckTokenValidity();
 
-    return await axios.delete(`http://127.0.0.1:5000/api/game/${id}`, {
+    return await apiClient.delete(`/game/${id}`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -297,7 +297,7 @@ export const deleteGame = async (id: string, dialog: Ref<boolean>): Promise<void
 
 /**
  * Handler to wrap the deleteGame function.
- * 
+ *
  * @async
  * @handler
  * @param id - The Id of the game to delete.

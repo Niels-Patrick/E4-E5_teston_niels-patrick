@@ -230,7 +230,6 @@ export const submitAddGameForm = async (): Promise<Game> => {
             getGames()
                 .then((data) => {games.value = data})
                 .catch((err) => {
-                    message.value;
                     console.error('Error:', err)
                 });
 

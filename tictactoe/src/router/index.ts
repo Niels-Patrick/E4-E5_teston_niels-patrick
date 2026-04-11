@@ -89,15 +89,11 @@ router.beforeEach(async (to, from, next) => {
     const token = localStorage.getItem('access_token');
 
     // Getting the user's role from the JWT token payload
-    var role = '';
-    var username = '';
-    var id = '';
+    let role = '';
 
     if (token) {
         const decoded = jwtDecode<JwtPayload>(token);
-        id = decoded.sub;
         role = decoded.role.name;
-        username = decoded.username;
     }
 
     handleCheckTokenValidity();

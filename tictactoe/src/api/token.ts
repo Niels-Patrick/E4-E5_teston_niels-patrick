@@ -107,8 +107,8 @@ export const checkTokenValidity = async (token: string | null): Promise<boolean>
  */
 export const handleCheckTokenValidity = async (): Promise<void> => {
     const token = localStorage.getItem('access_token');
-    var accessTokenValidity = false;
-    var refreshTokenValidity = false;
+    let accessTokenValidity = false;
+    let refreshTokenValidity = false;
 
     if (token) {
         // Checking the tokens time validity and refreshes it if expired.

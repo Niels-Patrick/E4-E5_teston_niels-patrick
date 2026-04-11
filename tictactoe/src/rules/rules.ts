@@ -19,7 +19,7 @@ export const nameRules = [
 // Password rules definition
 export const passwordRules = [
     (value: string) => {
-        if (/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[^!@#\$%]*[!@#\$%]).{9,})\S$/.test(value)) return true
+        if (/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[^!@#$%]*[!@#$%]).{9,})\S$/.test(value)) return true
         return 'Password must be at least 10 characters long, have at least 1 upper case letter, 1 number and 1 special character.'
     }
 ];
@@ -43,7 +43,7 @@ export const oldPasswordRules = [
 // Email rules definition
 export const emailRules = [
     (value: string) => {
-        if (/^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/.test(value)) return true
+        if (/^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/.test(value)) return true
         return 'Invalid email.'
     }
 ];

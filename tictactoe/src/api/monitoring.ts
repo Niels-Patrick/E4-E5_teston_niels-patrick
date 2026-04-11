@@ -49,8 +49,6 @@ export function setFormToDefault(): void {
 export const lastGamesResults = async (): Promise<Record<string, string>> => {
     handleCheckTokenValidity();
 
-    const payload = cloneDeep(formRetrain.value);
-
     return await apiClient.get('/monitoring/last-game-results',
     {
         headers: {

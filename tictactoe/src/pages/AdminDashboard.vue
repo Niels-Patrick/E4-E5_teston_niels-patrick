@@ -353,7 +353,9 @@ This module is only accessible to users with the "Admin" role. It allows them to
 
     const filteredUsers = computed(() => {
         return users.value.filter((user: UserRead) => {
-            const matchesRole = selectedRoles.value.length === 0 || selectedRoles.value.includes(user.role?.idRole!);
+            const userRoleId = user.role?.idRole;
+            const matchesRole = selectedRoles.value.length === 0
+                || (userRoleId !== undefined && selectedRoles.value.includes(userRoleId));
 
             return matchesRole;
         });

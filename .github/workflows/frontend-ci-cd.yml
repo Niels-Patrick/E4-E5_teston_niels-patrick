@@ -110,6 +110,12 @@ jobs:
           username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
           password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
+      - name: Verify ACR login via Docker CLI
+        run: |
+          echo "${{ secrets.AZURE_REGISTRY_PASSWORD }}" | docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io \
+            --username "${{ secrets.AZURE_REGISTRY_USERNAME }}" \
+            --password-stdin
+
       - name: Extract Docker metadata for GitHub
         id: meta-github
         uses: docker/metadata-action@v5
@@ -128,6 +134,16 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha,format=short
+
+      - name: Build Docker image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./tictactoe
+          file: ./tictactoe/Dockerfile
+          push: false
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:ci-local
+          labels: ${{ steps.meta-github.outputs.labels }}
 
       - name: Build and push Docker image to both registries
         uses: docker/build-push-action@v6

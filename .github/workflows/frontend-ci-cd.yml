@@ -22,7 +22,7 @@ concurrency:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   WORKING_DIRECTORY: tictactoe
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/e4-e5-tictactoe-frontend
+  IMAGE_NAME: ghcr.io/niels-patrick/e4-e5-tictactoe-frontend
   AZURE_IMAGE_NAME: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io/e4-e5-frontend
 
 jobs:

@@ -170,3 +170,4 @@ docker compose up --build
 ```
 
 The container serves the built Vue application through Nginx. Nginx forwards `/api` requests to the E2-E3 backend container on the shared Docker network.
+The same compose stack also starts Uptime Kuma for availability monitoring. By default, its UI is available at `http://localhost:3002`, and you can monitor the Vue app from Kuma by adding an `HTTP(s)` monitor targeting `http://e4-e5-frontend`.

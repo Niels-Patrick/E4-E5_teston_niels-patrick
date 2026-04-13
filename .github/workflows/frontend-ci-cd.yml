@@ -175,6 +175,16 @@ jobs:
 
       - name: Recreate Azure Container Instance
         run: |
+          BACKEND_FQDN=$(az container show \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name e2-e3-backend \
+            --query ipAddress.fqdn -o tsv)
+
+          if [ -z "$BACKEND_FQDN" ]; then
+            echo "Backend FQDN is empty. Ensure e2-e3-backend exists and has a public IP."
+            exit 1
+          fi
+
           if az container show --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name e4-e5-frontend >/dev/null 2>&1; then
             az container delete \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
@@ -197,10 +207,13 @@ jobs:
             --registry-login-server ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io \
             --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
             --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }} \
+            --environment-variables \
+              API_UPSTREAM_HOST="$BACKEND_FQDN" \
+              API_UPSTREAM_PORT="5000" \
             --ports 80 \
             --cpu 1 \
             --memory 1 \
-            --restart-policy Always \
+            --restart-policy Never \
             --ip-address Public \
             --dns-name-label e4-e5-frontend
 

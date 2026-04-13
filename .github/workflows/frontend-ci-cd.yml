@@ -173,11 +173,26 @@ jobs:
           creds: >-
             {"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}
 
-      - name: Create or update Azure Container Instance
+      - name: Recreate Azure Container Instance
         run: |
+          if az container show --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name e4-e5-frontend >/dev/null 2>&1; then
+            az container delete \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --name e4-e5-frontend \
+              --yes
+
+            for i in $(seq 1 24); do
+              if ! az container show --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name e4-e5-frontend >/dev/null 2>&1; then
+                break
+              fi
+              sleep 5
+            done
+          fi
+
           az container create \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --name e4-e5-frontend \
+            --os-type Linux \
             --image ${{ env.AZURE_IMAGE_NAME }}:latest \
             --registry-login-server ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io \
             --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
@@ -187,12 +202,7 @@ jobs:
             --memory 1 \
             --restart-policy Always \
             --ip-address Public \
-            --dns-name-label e4-e5-frontend \
-            --overwrite || \
-          az container update \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --name e4-e5-frontend \
-            --image ${{ env.AZURE_IMAGE_NAME }}:latest
+            --dns-name-label e4-e5-frontend
 
       - name: Get container FQDN
         run: |

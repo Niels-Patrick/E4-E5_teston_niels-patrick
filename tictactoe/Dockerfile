@@ -3,8 +3,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
-RUN corepack prepare pnpm@8.15.4 --activate
-RUN ln -s $(corepack where pnpm)/pnpm /usr/local/bin/pnpm
+RUN npm install -g pnpm@8.15.4
 RUN pnpm install --frozen-lockfile
 
 COPY . .

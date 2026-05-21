@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 RUN corepack prepare pnpm@8.15.4 --activate
+RUN ln -s $(corepack where pnpm)/pnpm /usr/local/bin/pnpm
 RUN pnpm install --frozen-lockfile
 
 COPY . .
